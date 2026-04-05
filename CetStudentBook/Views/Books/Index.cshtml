@@ -1,13 +1,19 @@
 @model IEnumerable<CetStudentBook.Models.Book>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
-    ViewData["Title"] = "Books";
+    ViewData["Title"] = ViewBag.CategoryName != null ? $"Books - {ViewBag.CategoryName}" : "Books";
 }
 
-<h1>Books</h1>
+<h1>@(ViewBag.CategoryName != null ? $"Books - {ViewBag.CategoryName}" : "Books")</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
+    @if (ViewBag.CategoryId != null)
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">Show All</a>
+    }
 </p>
 
 <table class="table table-hover">
@@ -27,6 +33,12 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.First().IsSecondHand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Price)
+            </th>
+            <th>
+                Category
             </th>
             <th></th>
         </tr>
@@ -51,6 +63,20 @@
                     @(item.IsSecondHand ? "Yes" : "No")
                 </td>
                 <td>
+                    @item.Price.ToString("C")
+                </td>
+                <td>
+                    @(item.Category?.Name ?? "—")
+                </td>
+                <td>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-success"> Add to Cart</button>
+                        </form>
+                    }
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
                 </td>

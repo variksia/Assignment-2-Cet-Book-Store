@@ -1,6 +1,8 @@
 using CetStudentBook.Data;
 using CetStudentBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CetStudentBook.Controllers
 {
@@ -13,20 +15,28 @@ namespace CetStudentBook.Controllers
             context = _context;
         }
 
-        // GET: /Books
-        public IActionResult Index()
+        public IActionResult Index(int? categoryId)
         {
-            List<Book> books = context.Books.ToList();
+            var booksQuery = context.Books.Include(b => b.Category).AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                booksQuery = booksQuery.Where(b => b.CategoryId == categoryId.Value);
+                var category = context.Categories.Find(categoryId.Value);
+                ViewBag.CategoryName = category?.Name;
+            }
+
+            ViewBag.CategoryId = categoryId;
+            List<Book> books = booksQuery.ToList();
             return View(books);
         }
 
-        // GET: /Books/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name");
             return View();
         }
 
-        // POST: /Books/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Book book)
@@ -37,10 +47,10 @@ namespace CetStudentBook.Controllers
                 context.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", book.CategoryId);
             return View(book);
         }
 
-        // GET: /Books/Edit/5
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -55,10 +65,10 @@ namespace CetStudentBook.Controllers
                 return NotFound();
             }
 
+            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", book.CategoryId);
             return View(book);
         }
 
-        // POST: /Books/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Book book)
@@ -69,10 +79,10 @@ namespace CetStudentBook.Controllers
                 context.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", book.CategoryId);
             return View(book);
         }
 
-        // GET: /Books/Delete/5
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -80,7 +90,7 @@ namespace CetStudentBook.Controllers
                 return NotFound();
             }
 
-            var book = context.Books.FirstOrDefault(b => b.Id == id);
+            var book = context.Books.Include(b => b.Category).FirstOrDefault(b => b.Id == id);
 
             if (book == null)
             {
@@ -90,7 +100,6 @@ namespace CetStudentBook.Controllers
             return View(book);
         }
 
-        // POST: /Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -108,3 +117,4 @@ namespace CetStudentBook.Controllers
         }
     }
 }
+

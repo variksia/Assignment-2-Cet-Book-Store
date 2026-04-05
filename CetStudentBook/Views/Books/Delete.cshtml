@@ -45,6 +45,20 @@
             <dd class="col-sm-9">
                 @(Model.IsSecondHand ? "Yes" : "No")
             </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Price.ToString("C")
+            </dd>
+
+            <dt class="col-sm-3">
+                Category
+            </dt>
+            <dd class="col-sm-9">
+                @(Model.Category?.Name ?? "—")
+            </dd>
         </dl>
     </div>
 </div>

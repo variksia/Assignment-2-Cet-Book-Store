@@ -16,8 +16,7 @@ namespace CetStudentBook.Controllers
         }
         public IActionResult Index()
         {
-            // List<Student> students  = context.Students.Where(s=>s.Name.StartsWith("h").ToList(); // select * from students where name like 'h%' 
-            List<Student> students = context.Students.ToList(); // select * from students where name like 'h%' 
+            List<Student> students = context.Students.ToList(); 
             return View(students);
         }
 

@@ -1,0 +1,42 @@
+@model IEnumerable<CetStudentBook.Models.Order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h1> My Orders</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You have no orders yet. <a asp-controller="Books" asp-action="Index">Browse books</a> to start shopping.
+    </div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.OrderDate.ToString("g")</td>
+                    <td>@order.OrderItems.Count item(s)</td>
+                    <td>@order.TotalPrice.ToString("C")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-primary">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,45 @@
+@model CetStudentBook.Models.Order
+
+@{
+    ViewData["Title"] = $"Order #{Model.Id}";
+}
+
+<h1> Order #@Model.Id</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Order Date</dt>
+            <dd class="col-sm-9">@Model.OrderDate.ToString("f")</dd>
+
+            <dt class="col-sm-3">Total Price</dt>
+            <dd class="col-sm-9"><strong>@Model.TotalPrice.ToString("C")</strong></dd>
+        </dl>
+    </div>
+</div>
+
+<h3>Order Items</h3>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            <tr>
+                <td>@item.Book?.Name</td>
+                <td>@item.Price.ToString("C")</td>
+                <td>@item.Quantity</td>
+                <td>@((item.Price * item.Quantity).ToString("C"))</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to My Orders</a>
